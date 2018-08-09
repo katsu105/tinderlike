@@ -1,29 +1,147 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow
- */
+import React, { Component } from 'react';
+import Swiper from 'react-native-deck-swiper';
+import { Button, StyleSheet, Text, View } from 'react-native';
 
-import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View} from 'react-native';
+export default class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      cards: ['1', '2', '3'],
+      swipedAllCards: false,
+      swipeDirection: '',
+      isSwipingBack: false,
+      cardIndex: 0
+    };
+  }
 
-const instructions = Platform.select({
-  ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
-  android:
-    'Double tap R on your keyboard to reload,\n' +
-    'Shake or press menu button for dev menu',
-});
+  onSwipedAllCards = () => {
+    this.setState({
+      swipedAllCards: true
+    });
+  };
 
-type Props = {};
-export default class App extends Component<Props> {
+  setIsSwipingBack = (isSwipingBack, cb) => {
+    this.setState(
+      {
+        isSwipingBack
+      },
+      cb
+    );
+  };
+
+  swipeBack = () => {
+    if (!this.state.isSwipingBack) {
+      this.setIsSwipingBack(true, () => {
+        this.swiper.swipeBack(() => {
+          this.setIsSwipingBack(false);
+        });
+      });
+    }
+  };
+
+  swipeLeft = () => {
+    this.swiper.swipeLeft();
+  };
+
+  renderCard = (card, index) => {
+    return (
+      <View style={styles.card}>
+        <Text style={styles.text}>{card} - {index}</Text>
+      </View>
+    );
+  };
+
   render() {
     return (
       <View style={styles.container}>
-        <Text style={styles.welcome}>Welcome to React Native!</Text>
-        <Text style={styles.instructions}>To get started, edit App.js</Text>
-        <Text style={styles.instructions}>{instructions}</Text>
+        <Swiper
+          ref={swiper => {
+            this.swiper = swiper;
+          }}
+          onSwiped={this.onSwiped}
+          onTapCard={this.swipeLeft}
+          cards={this.state.cards}
+          cardIndex={this.state.cardIndex}
+          cardVerticalMargin={80}
+          renderCard={this.renderCard}
+          onSwipedAll={this.onSwipedAllCards}
+          stackSize={3}
+          stackSeparation={15}
+          overlayLabels={{
+            bottom: {
+              title: 'BLEAH',
+              style: {
+                label: {
+                  backgroundColor: 'red',
+                  borderColor: 'black',
+                  color: 'white',
+                  borderWidth: 1
+                },
+                wrapper: {
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }
+              }
+            },
+            left: {
+              title: 'NOPE',
+              style: {
+                label: {
+                  backgroundColor: 'black',
+                  borderColor: 'black',
+                  color: 'white',
+                  borderWidth: 1
+                },
+                wrapper: {
+                  flexDirection: 'column',
+                  alignItems: 'flex-end',
+                  justifyContent: 'flex-start',
+                  marginTop: 30,
+                  marginLeft: -30
+                }
+              }
+            },
+            right: {
+              title: 'LIKE',
+              style: {
+                label: {
+                  backgroundColor: 'fuchsia',
+                  borderColor: 'black',
+                  color: 'white',
+                  borderWidth: 1
+                },
+                wrapper: {
+                  flexDirection: 'column',
+                  alignItems: 'flex-start',
+                  justifyContent: 'flex-start',
+                  marginTop: 30,
+                  marginLeft: 30
+                }
+              }
+            },
+            top: {
+              title: 'SUPER LIKE',
+              style: {
+                label: {
+                  backgroundColor: 'blue',
+                  borderColor: 'black',
+                  color: 'white',
+                  borderWidth: 1
+                },
+                wrapper: {
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }
+              }
+            }
+          }}
+          animateOverlayLabelsOpacity
+          animateCardOpacity
+        >
+          <Button onPress={this.swipeLeft} title='Swipe Left' />
+        </Swiper>
       </View>
     );
   }
@@ -32,18 +150,25 @@ export default class App extends Component<Props> {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#F5FCFF'
+  },
+  card: {
+    flex: 1,
+    borderRadius: 4,
+    borderWidth: 2,
+    borderColor: '#E8E8E8',
     justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
+    backgroundColor: 'white'
   },
-  welcome: {
-    fontSize: 20,
+  text: {
     textAlign: 'center',
-    margin: 10,
+    fontSize: 50,
+    backgroundColor: 'transparent'
   },
-  instructions: {
+  done: {
     textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
-  },
+    fontSize: 30,
+    color: 'white',
+    backgroundColor: 'transparent'
+  }
 });
